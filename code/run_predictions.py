@@ -2,8 +2,9 @@ import os
 import numpy as np
 import json
 from PIL import Image
+from helper import classify, get_kernel
 
-def detect_red_light(I):
+def detect_red_light(I,k):
     '''
     This function takes a numpy array <I> and returns a list <bounding_boxes>.
     The list <bounding_boxes> should have one element for each red light in the 
@@ -25,25 +26,9 @@ def detect_red_light(I):
     BEGIN YOUR CODE
     '''
     
-    '''
-    As an example, here's code that generates between 1 and 5 random boxes
-    of fixed size and returns the results in the proper format.
-    '''
     
-    box_height = 8
-    box_width = 6
+    bounding_boxes,_ = classify(I,k)
     
-    num_boxes = np.random.randint(1,5) 
-    
-    for i in range(num_boxes):
-        (n_rows,n_cols,n_channels) = np.shape(I)
-        
-        tl_row = np.random.randint(n_rows - box_height)
-        tl_col = np.random.randint(n_cols - box_width)
-        br_row = tl_row + box_height
-        br_col = tl_col + box_width
-        
-        bounding_boxes.append([tl_row,tl_col,br_row,br_col]) 
     
     '''
     END YOUR CODE
@@ -67,6 +52,9 @@ file_names = sorted(os.listdir(data_path))
 # remove any non-JPEG files: 
 file_names = [f for f in file_names if '.jpg' in f] 
 
+
+k = get_kernel()
+
 preds = {}
 for i in range(len(file_names)):
     
@@ -76,7 +64,7 @@ for i in range(len(file_names)):
     # convert to numpy array:
     I = np.asarray(I)
     
-    preds[file_names[i]] = detect_red_light(I)
+    preds[file_names[i]] = detect_red_light(I,k)
 
 # save preds (overwrites any previous predictions!)
 with open(os.path.join(preds_path,'preds.json'),'w') as f:
